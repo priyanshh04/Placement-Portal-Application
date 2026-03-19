@@ -1,105 +1,74 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="row g-4">
-    <div class="col-xl-4">
-        <div class="card border-0 shadow-sm rounded-4 h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start mb-3">
-                    <div>
-                        <h3 class="fw-bold mb-1">{{ company.company_name }}</h3>
-                        <div class="text-secondary">{{ company.user.email }}</div>
-                    </div>
-                    <span class="badge text-bg-{% if company.approval_status == 'Approved' %}success{% elif company.approval_status == 'Rejected' %}danger{% else %}warning{% endif %}">
-                        {{ company.approval_status }}
-                    </span>
-                </div>
-                <p><strong>HR Contact:</strong> {{ company.hr_contact }}</p>
-                <p><strong>Website:</strong> {{ company.website or 'Not provided' }}</p>
-                <p><strong>Description:</strong> {{ company.description or 'No description added.' }}</p>
-                <a class="btn btn-outline-dark" href="{{ url_for('company.profile') }}">Edit Company Profile</a>
-            </div>
-        </div>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1">Student Dashboard</h2>
+        <p class="text-secondary mb-0">View approved drives, track applications, and monitor your placement history.</p>
     </div>
-
-    <div class="col-xl-8">
-        <div class="card border-0 shadow-sm rounded-4">
-            <div class="card-body">
-                <h3 class="fw-bold mb-3">Create Placement Drive</h3>
-                <form method="post">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Job Title</label>
-                            <input class="form-control" type="text" name="job_title" required {% if company.approval_status != 'Approved' %}disabled{% endif %}>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Package</label>
-                            <input class="form-control" type="text" name="package_offered" {% if company.approval_status != 'Approved' %}disabled{% endif %}>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Openings</label>
-                            <input class="form-control" type="number" name="openings" min="1" value="1" required {% if company.approval_status != 'Approved' %}disabled{% endif %}>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Location</label>
-                            <input class="form-control" type="text" name="location" {% if company.approval_status != 'Approved' %}disabled{% endif %}>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Application Deadline</label>
-                            <input class="form-control" type="date" name="application_deadline" required {% if company.approval_status != 'Approved' %}disabled{% endif %}>
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label">Job Description</label>
-                            <textarea class="form-control" rows="3" name="job_description" required {% if company.approval_status != 'Approved' %}disabled{% endif %}></textarea>
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label">Eligibility Criteria</label>
-                            <textarea class="form-control" rows="3" name="eligibility_criteria" required {% if company.approval_status != 'Approved' %}disabled{% endif %}></textarea>
-                        </div>
-                    </div>
-                    <button class="btn btn-primary mt-4" {% if company.approval_status != 'Approved' %}disabled{% endif %}>Submit Drive</button>
-                </form>
-            </div>
-        </div>
-    </div>
+    <a class="btn btn-outline-primary" href="{{ url_for('student.profile') }}">Edit Profile</a>
 </div>
 
-<div class="card border-0 shadow-sm rounded-4 mt-4">
-    <div class="card-body">
-        <h3 class="fw-bold mb-3">Your Placement Drives</h3>
-        <div class="table-responsive">
-            <table class="table align-middle">
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Status</th>
-                        <th>Deadline</th>
-                        <th>Applicants</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for drive in drives %}
-                        <tr>
-                            <td>{{ drive.job_title }}</td>
-                            <td><span class="badge text-bg-light">{{ drive.status }}</span></td>
-                            <td>{{ drive.application_deadline }}</td>
-                            <td>{{ applicant_counts[drive.id] }}</td>
-                            <td class="d-flex flex-wrap gap-2">
-                                <a class="btn btn-outline-primary btn-sm" href="{{ url_for('company.drive_applications', drive_id=drive.id) }}">Applications</a>
-                                <a class="btn btn-outline-dark btn-sm" href="{{ url_for('company.edit_drive', drive_id=drive.id) }}">Edit</a>
-                                <form method="post" action="{{ url_for('company.close_drive', drive_id=drive.id) }}">
-                                    <button class="btn btn-outline-warning btn-sm">Close</button>
-                                </form>
-                                <form method="post" action="{{ url_for('company.delete_drive', drive_id=drive.id) }}">
-                                    <button class="btn btn-outline-danger btn-sm">Delete</button>
-                                </form>
-                            </td>
-                        </tr>
-                    {% else %}
-                        <tr><td colspan="5" class="text-center text-secondary">No placement drives created yet.</td></tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+<div class="row g-4">
+    <div class="col-xl-7">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body">
+                <h4 class="fw-bold mb-3">Approved Placement Drives</h4>
+                {% for drive in approved_drives %}
+                    <div class="border rounded-4 p-3 mb-3">
+                        <div class="d-flex justify-content-between flex-wrap gap-3 mb-2">
+                            <div>
+                                <h5 class="mb-1">{{ drive.job_title }}</h5>
+                                <div class="text-secondary small">{{ drive.company.company_name }} | Deadline: {{ drive.application_deadline }}</div>
+                            </div>
+                            <span class="badge text-bg-success">{{ drive.status }}</span>
+                        </div>
+                        <p class="mb-2"><strong>Eligibility:</strong> {{ drive.eligibility_criteria }}</p>
+                        <p class="mb-3"><strong>Description:</strong> {{ drive.job_description }}</p>
+                        {% if drive.id in applied_drive_ids %}
+                            <button class="btn btn-outline-secondary" disabled>Already Applied</button>
+                        {% else %}
+                            <form method="post" action="{{ url_for('student.apply_for_drive', drive_id=drive.id) }}">
+                                <button class="btn btn-primary">Apply Now</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <p class="text-secondary mb-0">No approved drives are available right now.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-5">
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-body">
+                <h4 class="fw-bold mb-3">My Applications</h4>
+                {% for application in applications %}
+                    <div class="border rounded-3 p-3 mb-3">
+                        <div class="fw-semibold">{{ application.drive.job_title }}</div>
+                        <div class="small text-secondary">{{ application.drive.company.company_name }}</div>
+                        <div class="small mt-2">Applied on {{ application.application_date.strftime('%Y-%m-%d') }}</div>
+                        <div class="mt-2"><span class="badge text-bg-primary">{{ application.status }}</span></div>
+                    </div>
+                {% else %}
+                    <p class="text-secondary mb-0">You have not applied to any drives yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body">
+                <h4 class="fw-bold mb-3">Placement History</h4>
+                {% for item in history %}
+                    <div class="border rounded-3 p-3 mb-3">
+                        <div class="fw-semibold">{{ item.drive.job_title }}</div>
+                        <div class="small text-secondary">{{ item.drive.company.company_name }}</div>
+                        <div class="mt-2"><span class="badge text-bg-{% if item.status == 'Selected' %}success{% else %}danger{% endif %}">{{ item.status }}</span></div>
+                    </div>
+                {% else %}
+                    <p class="text-secondary mb-0">No historical placement results yet.</p>
+                {% endfor %}
+            </div>
         </div>
     </div>
 </div>
