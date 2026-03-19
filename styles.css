@@ -1,0 +1,59 @@
+:root {
+    --portal-navy: #123458;
+    --portal-sky: #d4ebf8;
+    --portal-gold: #f1c40f;
+    --portal-ink: #1f2937;
+    --portal-white: #ffffff;
+}
+
+body.portal-body {
+    background:
+        radial-gradient(circle at top left, rgba(212, 235, 248, 0.95), transparent 30%),
+        linear-gradient(135deg, #f8fbff, #eef4f8 45%, #f6efe4);
+    color: var(--portal-ink);
+    min-height: 100vh;
+}
+
+.portal-nav {
+    background: linear-gradient(90deg, var(--portal-navy), #0f2741);
+}
+
+.hero-card,
+.metric-card,
+.stat-tile {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(18, 52, 88, 0.08);
+    box-shadow: 0 20px 50px rgba(18, 52, 88, 0.08);
+}
+
+.metric-card {
+    border-radius: 1.25rem;
+    padding: 1.25rem;
+}
+
+.metric-card span {
+    display: block;
+    color: #6b7280;
+    font-size: 0.95rem;
+}
+
+.metric-card strong {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.stat-tile {
+    border-radius: 1.25rem;
+    padding: 1.25rem;
+    height: 100%;
+}
+
+.stat-tile h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.table > :not(caption) > * > * {
+    background-color: transparent;
+}
