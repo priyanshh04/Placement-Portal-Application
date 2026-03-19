@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1">{{ drive.job_title }} Applications</h2>
+        <p class="text-secondary mb-0">{{ drive.company.company_name }} | Status: {{ drive.status }}</p>
+    </div>
+    <a class="btn btn-outline-secondary" href="{{ url_for('company.dashboard') }}">Back</a>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Department</th>
+                        <th>CGPA</th>
+                        <th>Resume</th>
+                        <th>Update Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for application in applications %}
+                        <tr>
+                            <td>
+                                {{ application.student.full_name }}
+                                <div class="small text-secondary">{{ application.student.roll_number }} | {{ application.student.user.email }}</div>
+                            </td>
+                            <td>{{ application.student.department }}</td>
+                            <td>{{ application.student.cgpa }}</td>
+                            <td>
+                                {% if application.student.resume_filename %}
+                                    <span class="small">{{ application.student.resume_filename }}</span>
+                                {% else %}
+                                    <span class="text-secondary small">Not uploaded</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <form method="post" action="{{ url_for('company.update_application_status', application_id=application.id) }}">
+                                    <div class="d-flex flex-column gap-2">
+                                        <select class="form-select form-select-sm" name="status">
+                                            {% for status in ['Applied', 'Shortlisted', 'Selected', 'Rejected'] %}
+                                                <option value="{{ status }}" {% if application.status == status %}selected{% endif %}>{{ status }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <input class="form-control form-control-sm" type="text" name="remarks" value="{{ application.remarks or '' }}" placeholder="Remarks">
+                                        <button class="btn btn-primary btn-sm">Save</button>
+                                    </div>
+                                </form>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr><td colspan="5" class="text-center text-secondary">No applications received yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

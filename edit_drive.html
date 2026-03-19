@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="fw-bold mb-0">Edit Placement Drive</h2>
+                    <a class="btn btn-outline-secondary" href="{{ url_for('company.dashboard') }}">Back</a>
+                </div>
+                <form method="post">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Job Title</label>
+                            <input class="form-control" type="text" name="job_title" value="{{ drive.job_title }}" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Package</label>
+                            <input class="form-control" type="text" name="package_offered" value="{{ drive.package_offered }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Openings</label>
+                            <input class="form-control" type="number" name="openings" min="1" value="{{ drive.openings }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Location</label>
+                            <input class="form-control" type="text" name="location" value="{{ drive.location }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Application Deadline</label>
+                            <input class="form-control" type="date" name="application_deadline" value="{{ drive.application_deadline.strftime('%Y-%m-%d') }}" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Job Description</label>
+                            <textarea class="form-control" rows="4" name="job_description" required>{{ drive.job_description }}</textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Eligibility Criteria</label>
+                            <textarea class="form-control" rows="4" name="eligibility_criteria" required>{{ drive.eligibility_criteria }}</textarea>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary mt-4">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
