@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero-card p-5 rounded-4 mb-4">
+    <div class="row align-items-center g-4">
+        <div class="col-lg-7">
+            <span class="badge text-bg-warning mb-3">Flask + SQLite Placement System</span>
+            <h1 class="display-5 fw-bold mb-3">Manage campus recruitment with a single placement portal.</h1>
+            <p class="lead text-secondary">Institutes, companies, and students can collaborate through approval workflows, drive management, and application tracking.</p>
+            <div class="d-flex flex-wrap gap-2 mt-4">
+                <a class="btn btn-primary btn-lg" href="{{ url_for('auth.login') }}">Login</a>
+                <a class="btn btn-outline-dark btn-lg" href="{{ url_for('auth.register_student') }}">Student Sign Up</a>
+                <a class="btn btn-outline-dark btn-lg" href="{{ url_for('auth.register_company') }}">Company Sign Up</a>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="row g-3">
+                <div class="col-6">
+                    <div class="stat-tile">
+                        <h2>Admin</h2>
+                        <p>Approve companies and drives, search records, and manage platform health.</p>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="stat-tile">
+                        <h2>Company</h2>
+                        <p>Create drives, review applicants, and update hiring outcomes.</p>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="stat-tile">
+                        <h2>Student</h2>
+                        <p>Build a profile, upload a resume, apply once per drive, and track placement history.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
