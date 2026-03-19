@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1">Admin Dashboard</h2>
+        <p class="text-secondary mb-0">Placement cell overview, approvals, and platform management.</p>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3"><div class="metric-card"><span>Total Students</span><strong>{{ stats.students }}</strong></div></div>
+    <div class="col-md-3"><div class="metric-card"><span>Total Companies</span><strong>{{ stats.companies }}</strong></div></div>
+    <div class="col-md-3"><div class="metric-card"><span>Total Drives</span><strong>{{ stats.drives }}</strong></div></div>
+    <div class="col-md-3"><div class="metric-card"><span>Total Applications</span><strong>{{ stats.applications }}</strong></div></div>
+</div>
+
+<div class="row g-4">
+    <div class="col-xl-6">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-body">
+                <h4 class="fw-bold mb-3">Pending Company Approvals</h4>
+                {% if pending_companies %}
+                    {% for company in pending_companies %}
+                        <div class="border rounded-3 p-3 mb-3">
+                            <div class="d-flex justify-content-between flex-wrap gap-3">
+                                <div>
+                                    <h5 class="mb-1">{{ company.company_name }}</h5>
+                                    <div class="text-secondary small">{{ company.hr_contact }} | {{ company.user.email }}</div>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <form method="post" action="{{ url_for('admin.update_company_approval', company_id=company.id) }}">
+                                        <input type="hidden" name="action" value="approve">
+                                        <button class="btn btn-success btn-sm">Approve</button>
+                                    </form>
+                                    <form method="post" action="{{ url_for('admin.update_company_approval', company_id=company.id) }}">
+                                        <input type="hidden" name="action" value="reject">
+                                        <button class="btn btn-outline-danger btn-sm">Reject</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-secondary mb-0">No pending company approvals.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-6">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-body">
+                <h4 class="fw-bold mb-3">Pending Drive Approvals</h4>
+                {% if pending_drives %}
+                    {% for drive in pending_drives %}
+                        <div class="border rounded-3 p-3 mb-3">
+                            <div class="d-flex justify-content-between flex-wrap gap-3">
+                                <div>
+                                    <h5 class="mb-1">{{ drive.job_title }}</h5>
+                                    <div class="text-secondary small">{{ drive.company.company_name }} | Deadline: {{ drive.application_deadline }}</div>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <form method="post" action="{{ url_for('admin.update_drive_approval', drive_id=drive.id) }}">
+                                        <input type="hidden" name="action" value="approve">
+                                        <button class="btn btn-success btn-sm">Approve</button>
+                                    </form>
+                                    <form method="post" action="{{ url_for('admin.update_drive_approval', drive_id=drive.id) }}">
+                                        <input type="hidden" name="action" value="reject">
+                                        <button class="btn btn-outline-danger btn-sm">Reject</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-secondary mb-0">No pending drive approvals.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mt-1">
+    <div class="col-xl-6">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="fw-bold mb-0">Students</h4>
+                    <form method="get" class="d-flex gap-2">
+                        <input class="form-control" type="text" name="student_query" value="{{ student_query }}" placeholder="Name / Roll / Contact">
+                        <button class="btn btn-outline-primary">Search</button>
+                    </form>
+                </div>
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Roll No</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in students %}
+                                <tr>
+                                    <td>{{ student.full_name }}<div class="small text-secondary">{{ student.user.email }}</div></td>
+                                    <td>{{ student.roll_number }}</td>
+                                    <td>
+                                        {% if student.user.is_blacklisted %}
+                                            <span class="badge text-bg-danger">Blacklisted</span>
+                                        {% elif not student.user.is_active_user %}
+                                            <span class="badge text-bg-secondary">Inactive</span>
+                                        {% else %}
+                                            <span class="badge text-bg-success">Active</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="d-flex flex-wrap gap-2">
+                                        <form method="post" action="{{ url_for('admin.toggle_user_status', user_id=student.user.id) }}">
+                                            <button class="btn btn-outline-dark btn-sm">Toggle Active</button>
+                                        </form>
+                                        <form method="post" action="{{ url_for('admin.toggle_blacklist', user_id=student.user.id) }}">
+                                            <button class="btn btn-outline-warning btn-sm">Blacklist</button>
+                                        </form>
+                                        <form method="post" action="{{ url_for('admin.delete_user', user_id=student.user.id) }}">
+                                            <button class="btn btn-outline-danger btn-sm">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr><td colspan="4" class="text-center text-secondary">No students found.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-6">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="fw-bold mb-0">Companies</h4>
+                    <form method="get" class="d-flex gap-2">
+                        <input class="form-control" type="text" name="company_query" value="{{ company_query }}" placeholder="Company name">
+                        <button class="btn btn-outline-primary">Search</button>
+                    </form>
+                </div>
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Company</th>
+                                <th>Approval</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for company in companies %}
+                                <tr>
+                                    <td>{{ company.company_name }}<div class="small text-secondary">{{ company.user.email }}</div></td>
+                                    <td><span class="badge text-bg-info">{{ company.approval_status }}</span></td>
+                                    <td class="d-flex flex-wrap gap-2">
+                                        <form method="post" action="{{ url_for('admin.toggle_user_status', user_id=company.user.id) }}">
+                                            <button class="btn btn-outline-dark btn-sm">Toggle Active</button>
+                                        </form>
+                                        <form method="post" action="{{ url_for('admin.toggle_blacklist', user_id=company.user.id) }}">
+                                            <button class="btn btn-outline-warning btn-sm">Blacklist</button>
+                                        </form>
+                                        <form method="post" action="{{ url_for('admin.delete_user', user_id=company.user.id) }}">
+                                            <button class="btn btn-outline-danger btn-sm">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr><td colspan="3" class="text-center text-secondary">No companies found.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mt-1">
+    <div class="col-xl-6">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body">
+                <h4 class="fw-bold mb-3">All Placement Drives</h4>
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Company</th>
+                                <th>Deadline</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for drive in drives %}
+                                <tr>
+                                    <td>{{ drive.job_title }}</td>
+                                    <td>{{ drive.company.company_name }}</td>
+                                    <td>{{ drive.application_deadline }}</td>
+                                    <td><span class="badge text-bg-light">{{ drive.status }}</span></td>
+                                </tr>
+                            {% else %}
+                                <tr><td colspan="4" class="text-center text-secondary">No drives found.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-6">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body">
+                <h4 class="fw-bold mb-3">All Applications</h4>
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Drive</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for application in applications %}
+                                <tr>
+                                    <td>{{ application.student.full_name }}</td>
+                                    <td>{{ application.drive.job_title }}</td>
+                                    <td><span class="badge text-bg-primary">{{ application.status }}</span></td>
+                                </tr>
+                            {% else %}
+                                <tr><td colspan="3" class="text-center text-secondary">No applications yet.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

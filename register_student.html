@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-body p-4">
+                <h2 class="fw-bold mb-4">Student Registration</h2>
+                <form method="post">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Full Name</label>
+                            <input class="form-control" type="text" name="full_name" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Roll Number</label>
+                            <input class="form-control" type="text" name="roll_number" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email</label>
+                            <input class="form-control" type="email" name="email" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Password</label>
+                            <input class="form-control" type="password" name="password" required minlength="6">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Contact Number</label>
+                            <input class="form-control" type="text" name="contact_number" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Department</label>
+                            <input class="form-control" type="text" name="department" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">CGPA</label>
+                            <input class="form-control" type="number" name="cgpa" step="0.01" min="0" max="10" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Graduation Year</label>
+                            <input class="form-control" type="number" name="graduation_year" min="2024" max="2100" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Skills</label>
+                            <textarea class="form-control" rows="3" name="skills"></textarea>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary mt-4">Create Student Account</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
